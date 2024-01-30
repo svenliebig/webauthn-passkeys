@@ -25,7 +25,7 @@ function App() {
             </p>
           </div>
           <div>
-            <div className="my-10">
+            <div className="my-6">
               <Webauthn />
 
               <div
