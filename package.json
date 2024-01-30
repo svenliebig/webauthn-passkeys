@@ -1,0 +1,17 @@
+{
+  "name": "webauthn-passkeys",
+  "version": "1.0.0",
+  "description": "",
+  "author": {
+    "name": "Sven Liebig",
+    "url": "https://github.com/svenliebig"
+  },
+  "license": "ISC",
+  "workspaces": [
+    "gui",
+    "server"
+  ],
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
