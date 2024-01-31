@@ -19,7 +19,7 @@ export function Webauthn() {
         {supported && (
           <CreatePasskeyButton username="bowser" refetch={refetch} />
         )}
-        <BareLogin />
+        <LoginButton />
       </div>
 
       <Users users={users} refetch={refetch} />
@@ -140,36 +140,6 @@ function Users({
 }
 
 function UserListItem({ user }: { user: User }) {
-  const [loading, setLoading] = useState(false)
-
-  const login = () => {
-    setLoading(true)
-    const publicKey = createCredentialPublicKey(user.user)
-    const result = navigator.credentials.get({
-      publicKey: {
-        challenge: publicKey.challenge,
-        rpId: publicKey?.rp?.id,
-        allowCredentials: [
-          {
-            id: base64URL.decode(user.id),
-            type: 'public-key',
-            transports: ['usb', 'nfc', 'ble']
-          }
-        ]
-      }
-    })
-
-    result
-      .then((r) => {
-        if (!r) {
-          return
-        }
-
-        console.log(r.response)
-      })
-      .finally(() => setLoading(false))
-  }
-
   return (
     <li className="flex items-center rounded-lg border border-solid border-gray-400 p-3 shadow-lg">
       <div className="grow">
@@ -182,9 +152,7 @@ function UserListItem({ user }: { user: User }) {
         </p>
       </div>
       <div>
-        <Button loading={loading} onClick={login}>
-          Login
-        </Button>
+        <LoginButton userId={user.id} />
       </div>
     </li>
   )
@@ -222,7 +190,7 @@ function Button({
   )
 }
 
-function BareLogin() {
+function LoginButton({ userId }: { userId?: string }) {
   const [loading, setLoading] = useState(false)
 
   const login = () => {
@@ -232,9 +200,18 @@ function BareLogin() {
 
     const result = navigator.credentials.get({
       publicKey: {
+        // TODO get challenge from server
         challenge: publicKey.challenge,
         rpId: publicKey?.rp?.id,
-        allowCredentials: []
+        allowCredentials: userId
+          ? [
+              {
+                id: base64URL.decode(userId),
+                type: 'public-key',
+                transports: ['usb', 'nfc', 'ble']
+              }
+            ]
+          : []
       }
     })
 
@@ -246,6 +223,8 @@ function BareLogin() {
 
         console.log(r.response.signature)
         console.log(base64URL.encode(r.response.signature))
+
+        // TODO send to server to verify
       })
       .finally(() => {
         setLoading(false)
